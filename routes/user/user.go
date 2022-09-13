@@ -3,7 +3,6 @@ package user
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	cfg "sybo/configs"
 	userhandler "sybo/handler/user"
@@ -35,7 +34,7 @@ func UserGroup(r *gin.Engine) {
 
 				err := userhandler.New(&user)
 				if err != nil {
-					c.AbortWithStatusJSON(checkError(err))
+					c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
 					return
 				}
 
@@ -64,33 +63,61 @@ func UserGroup(r *gin.Engine) {
 
 				err := userhandler.SaveState(&user)
 				if err != nil {
-					c.AbortWithStatusJSON(checkError(err))
+					c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
 					return
 				}
 
 			})
 
-		// userRoutes.METHOD("/:id",
-		// func(c *gin.Context) {
+		userRoutes.GET("/:userid/state",
+			func(c *gin.Context) {
 
-		// 	ID := c.Param("id")
-		// 	intID, err := strconv.Atoi(ID)
+				var user usermodel.User
 
-	}
-}
+				user.ID = c.Param("userid")
 
-//TODO check if necessary
-func checkError(err error) (int, gin.H) {
+				if ok := utils.IsValidUUID(user.ID); !ok {
+					c.AbortWithStatusJSON(400, gin.H{"error": fmt.Errorf("User ID provided is not a valid uuid")})
+					return
+				}
 
-	switch {
+				err := userhandler.LoadState(&user)
+				if err != nil {
+					c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
+					return
+				}
 
-	case strings.Contains(err.Error(), "out of bounds"):
-		return cfg.CODE_BADREQUEST, gin.H{"status": cfg.STATUS_BADREQUEST, "error": err.Error()}
+				c.JSON(cfg.CODE_SUCCESS, gin.H{
+					"gamesPlayed": user.GamesPlayed,
+					"score":       user.Score,
+				})
+			})
 
-	case strings.Contains(err.Error(), "not found"):
-		return cfg.CODE_EMPTY, gin.H{"status": cfg.STATUS_EMPTY, "error": err.Error()}
+		userRoutes.PUT("/:userid/friends",
+			func(c *gin.Context) {
 
-	default:
-		return cfg.CODE_BADREQUEST, gin.H{"status": cfg.STATUS_BADREQUEST, "error": err.Error()}
+				var friends usermodel.FriendsList
+
+				if err := c.ShouldBindJSON(&friends); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
+
+				var user usermodel.User
+
+				user.ID = c.Param("userid")
+
+				if ok := utils.IsValidUUID(user.ID); !ok {
+					c.AbortWithStatusJSON(400, gin.H{"error": fmt.Errorf("User ID provided is not a valid uuid")})
+					return
+				}
+
+				err := userhandler.UpdateFriends(friends, &user)
+				if err != nil {
+					c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
+					return
+				}
+
+			})
 	}
 }
