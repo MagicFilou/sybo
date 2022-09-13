@@ -12,3 +12,8 @@ func New(u *user.User) error {
 
 	return u.New()
 }
+
+func SaveState(u *user.User) error {
+
+	return u.SaveState()
+}

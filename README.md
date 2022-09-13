@@ -8,4 +8,6 @@ could have used direct call to db and quesries, it could be handy on a small pro
 
 //be consisten with the scorem should be the same not score and another place "hightscore"
 
-//
+//maybe an update user might be an easier way to use than smaller update endpoints
+
+//would recommend to use PATCH rather than PUT. PUT shoudl be to replace the entire object and PATCH only to do partial ones

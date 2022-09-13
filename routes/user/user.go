@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -8,6 +9,7 @@ import (
 	userhandler "sybo/handler/user"
 	l "sybo/logger"
 	usermodel "sybo/models/user"
+	"sybo/utils"
 
 	"sybo/mw"
 
@@ -41,6 +43,31 @@ func UserGroup(r *gin.Engine) {
 					"id":   user.ID,
 					"name": user.Name,
 				})
+			})
+
+		userRoutes.PUT("/:userid/state",
+			func(c *gin.Context) {
+
+				var user usermodel.User
+
+				if err := c.ShouldBindJSON(&user); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
+
+				user.ID = c.Param("userid")
+
+				if ok := utils.IsValidUUID(user.ID); !ok {
+					c.AbortWithStatusJSON(400, gin.H{"error": fmt.Errorf("User ID provided is not a valid uuid")})
+					return
+				}
+
+				err := userhandler.SaveState(&user)
+				if err != nil {
+					c.AbortWithStatusJSON(checkError(err))
+					return
+				}
+
 			})
 
 		// userRoutes.METHOD("/:id",
