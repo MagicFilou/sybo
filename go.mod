@@ -7,6 +7,7 @@ require (
 	github.com/gin-contrib/zap v0.0.2 // indirect
 	github.com/gin-gonic/gin v1.8.1 // indirect
 	github.com/go-gota/gota v0.12.0 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/jcmturner/gokrb5/v8 v8.2.0 // indirect
 	go.uber.org/zap v1.23.0 // indirect
 	gopkg.in/jcmturner/aescts.v1 v1.0.1 // indirect
