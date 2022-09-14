@@ -34,11 +34,16 @@ Before you get the program running there are a few steps to be done:
 ### Shared info
 
 All endpoints are JSON based.
+
 Only the method specified here will give a result otherwise the Status code associated is _404_
+
 If everything runs as expected the response will be a parsable JSON (see the documentation for the formats). Status code associated is _200_
+
 If no results are found, there are no response body and the Status code associated is _204_
+
 If there is an issue with the data provided e.g. a faulty ID or faulty request body the error will be given with the following body format:
 `{"error": "error as string"}` the Status code associated is 400
+
 Any other issue with result of a status code 500 and the error (following the same format as above) returned.
 
 The project has 6 enpoints, corresponding to the requirements given by my "friend" aka the assignment :
