@@ -22,6 +22,25 @@ func UserGroup(r *gin.Engine) {
 	)
 	{
 
+		userRoutes.GET("",
+			func(c *gin.Context) {
+
+				users, err := userhandler.GetAll()
+				if err != nil {
+					c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
+					return
+				}
+
+				if len(users) == 0 {
+					c.Status(cfg.CODE_EMPTY)
+					return
+				}
+
+				c.JSON(cfg.CODE_SUCCESS, gin.H{
+					"users": users,
+				})
+			})
+
 		userRoutes.POST("",
 			func(c *gin.Context) {
 

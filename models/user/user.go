@@ -9,13 +9,18 @@ import (
 type User struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
-	GamesPlayed int    `json:"gamesPlayed"`
-	Score       int    `json:"score"`
-	Friends     string `json:"friends"`
+	GamesPlayed int    `json:"gamesPlayed,omitempty"`
+	Score       int    `json:"score,omitempty"`
+	Friends     string `json:"friends,omitempty"`
 }
 
 type FriendsList struct {
 	Friends []string `json:"friends"`
+}
+
+type UserLimited struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 type Friend struct {
@@ -30,6 +35,30 @@ func (u User) ToFriendStruct() Friend {
 		Name:  u.Name,
 		Score: u.Score,
 	}
+}
+
+func (u User) ToLimitedStruct() UserLimited {
+	return UserLimited{
+		ID:   u.ID,
+		Name: u.Name,
+	}
+}
+
+func GetAll() ([]User, error) {
+
+	db, err := clients.GetCon()
+	if err != nil {
+		return nil, err
+	}
+
+	var users []User
+
+	result := db.Find(&users)
+	if result.Error != nil {
+		return users, result.Error
+	}
+
+	return users, nil
 }
 
 func (u *User) New() error {

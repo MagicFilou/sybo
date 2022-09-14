@@ -8,6 +8,24 @@ import (
 	"github.com/google/uuid"
 )
 
+func GetAll() ([]user.UserLimited, error) {
+
+	users, err := user.GetAll()
+	if err != nil {
+
+		return nil, err
+	}
+
+	var usersFormated []user.UserLimited
+
+	for _, u := range users {
+
+		usersFormated = append(usersFormated, u.ToLimitedStruct())
+	}
+
+	return usersFormated, err
+}
+
 func New(u *user.User) error {
 
 	u.ID = uuid.New().String()
@@ -36,7 +54,6 @@ func UpdateFriends(friends user.FriendsList, u *user.User) error {
 func GetFriends(u *user.User) ([]user.Friend, error) {
 
 	friends, err := u.GetFriends()
-
 	if err != nil {
 
 		return nil, err
