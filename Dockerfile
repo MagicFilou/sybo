@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine
+FROM golang:1.16
 
 # Create a directory for the app
 RUN mkdir /app
