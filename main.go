@@ -35,6 +35,7 @@ func main() {
 // ginInit: initialize the gin server
 func ginInit(logger *zap.Logger) *gin.Engine {
 
+	//Setup if dev or not
 	if cfg.GetConfig().ENV != "local" {
 
 		gin.SetMode(gin.ReleaseMode)

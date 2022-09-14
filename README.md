@@ -21,3 +21,10 @@ could have used direct call to db and quesries, it could be handy on a small pro
 //make consts on all the items which are reused -> names, separators etc...
 
 //return for get friends if there is no friends found will give the following results
+
+//handlers, models and routes are ready to be extended with new data type. This will come handy when Friends and Scores are in separate tables for future features.
+
+// I ahve added extensive comments for the sake of the exercise, but irl the variable and func names would cover
+
+all endpoints return an object { error: error if anything goes wrong.}
+could be extended to check if userid corresponds to a user or no

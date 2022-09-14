@@ -18,10 +18,7 @@ func init() {
 	}
 }
 
+// GetLogger: get the logger
 func GetLogger() *zap.Logger {
 	return logger
-}
-
-func GetSugar() *zap.SugaredLogger {
-	return logger.Sugar()
 }
