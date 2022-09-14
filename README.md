@@ -48,6 +48,8 @@ Any other issue with result of a status code 500 and the error (following the sa
 
 The project has 6 enpoints, corresponding to the requirements given by my "friend" aka the assignment :
 
+### User Endpoints
+
 - GET `/user`
   This is the only endpoint that handles parameters for now. You can put any param you want but _id_ and _name_ will be the most used ones. For now this is a slight improve from the specification and it uses a "like" clause to fetch and filter the data so it will only work with string params. For now this is case sensitive but it could be improve for future uses.
 
@@ -72,6 +74,8 @@ The project has 6 enpoints, corresponding to the requirements given by my "frien
   Reponse example:
   `{ "id": "18dd75e9-3d4a-48e2-bafc-3c8f95a8f0d1", "name": "John" }`
 
+### State endpoints
+
 - GET `/user/<userid>/state`
   Get the state for the user provided.
 
@@ -89,13 +93,15 @@ The project has 6 enpoints, corresponding to the requirements given by my "frien
   Request example:
   `{ "gamesPlayed": 42, "score": 358 }`
 
-  - GET `/user/<userid>/friends`
-    Get the friends for a user, containing their _id_, _name_ and _highscore_.
+### Friends endpoints
 
-  Mandatory URL parameters: **userid**
+- GET `/user/<userid>/friends`
+  Get the friends for a user, containing their _id_, _name_ and _highscore_.
 
-  Reponse example:
-  `{ "friends": [ { "id": "18dd75e9-3d4a-48e2-bafc-3c8f95a8f0d1", "name": "John", "highscore": 322 }, { "id": "f9a9af78-6681-4d7d-8ae7-fc41e7a24d08", "name": "Bob", "highscore": 21 }, { "id": "2d18862b-b9c3-40f5-803e-5e100a520249", "name": "Alice", "highscore": 99332 } ] }`
+Mandatory URL parameters: **userid**
+
+Reponse example:
+`{ "friends": [ { "id": "18dd75e9-3d4a-48e2-bafc-3c8f95a8f0d1", "name": "John", "highscore": 322 }, { "id": "f9a9af78-6681-4d7d-8ae7-fc41e7a24d08", "name": "Bob", "highscore": 21 }, { "id": "2d18862b-b9c3-40f5-803e-5e100a520249", "name": "Alice", "highscore": 99332 } ] }`
 
 - PUT `/user/<userid>/friends`
   Update the list of friends for a user.
