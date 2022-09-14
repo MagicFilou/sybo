@@ -119,5 +119,34 @@ func UserGroup(r *gin.Engine) {
 				}
 
 			})
+
+		userRoutes.GET("/:userid/friends",
+			func(c *gin.Context) {
+
+				var user usermodel.User
+
+				user.ID = c.Param("userid")
+
+				if ok := utils.IsValidUUID(user.ID); !ok {
+					c.AbortWithStatusJSON(400, gin.H{"error": fmt.Errorf("User ID provided is not a valid uuid")})
+					return
+				}
+
+				friends, err := userhandler.GetFriends(&user)
+				if err != nil {
+					c.AbortWithStatusJSON(500, gin.H{"error": err.Error()})
+					return
+				}
+
+				if len(friends) == 0 {
+					c.Status(cfg.CODE_EMPTY)
+					return
+				}
+
+				c.JSON(cfg.CODE_SUCCESS, gin.H{
+					"friends": friends,
+				})
+
+			})
 	}
 }

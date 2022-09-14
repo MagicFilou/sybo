@@ -32,3 +32,22 @@ func UpdateFriends(friends user.FriendsList, u *user.User) error {
 	return u.UpdateFriends()
 
 }
+
+func GetFriends(u *user.User) ([]user.Friend, error) {
+
+	friends, err := u.GetFriends()
+
+	if err != nil {
+
+		return nil, err
+	}
+
+	var friendsFormated []user.Friend
+
+	for _, f := range friends {
+
+		friendsFormated = append(friendsFormated, f.ToFriendStruct())
+	}
+
+	return friendsFormated, err
+}

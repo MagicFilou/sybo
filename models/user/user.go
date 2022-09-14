@@ -1,20 +1,35 @@
 package user
 
 import (
+	"strings"
 	"sybo/clients"
 )
 
 // A user
 type User struct {
-	ID          string `json:"id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	GamesPlayed int    `json:"gamesPlayed,omitempty"`
-	Score       int    `json:"score,omitempty"`
-	Friends     string `json:"friends,omitempty"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	GamesPlayed int    `json:"gamesPlayed"`
+	Score       int    `json:"score"`
+	Friends     string `json:"friends"`
 }
 
 type FriendsList struct {
 	Friends []string `json:"friends"`
+}
+
+type Friend struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Score int    `json:"highscore"`
+}
+
+func (u User) ToFriendStruct() Friend {
+	return Friend{
+		ID:    u.ID,
+		Name:  u.Name,
+		Score: u.Score,
+	}
 }
 
 func (u *User) New() error {
@@ -48,6 +63,22 @@ func (u *User) SaveState() error {
 	return nil
 }
 
+func (u *User) LoadState() error {
+
+	db, err := clients.GetCon()
+	if err != nil {
+		return err
+	}
+
+	result := db.Find(&u)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func (u *User) UpdateFriends() error {
 
 	db, err := clients.GetCon()
@@ -64,18 +95,29 @@ func (u *User) UpdateFriends() error {
 	return nil
 }
 
-func (u *User) LoadState() error {
+func (u *User) GetFriends() ([]User, error) {
 
 	db, err := clients.GetCon()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	result := db.Find(&u)
 
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
 
-	return nil
+	var friends []User
+	var toFind []string
+
+	toFind = strings.Split(u.Friends, ",")
+
+	result = db.Where("id IN ?", toFind).Find(&friends)
+
+	if result.Error != nil {
+		return friends, result.Error
+	}
+
+	return friends, nil
 }
