@@ -67,6 +67,11 @@ func UserGroup(r *gin.Engine) {
 					return
 				}
 
+				if len(user.Name) == 0 {
+					c.JSON(checkError(fmt.Errorf("User data given should have a name")))
+					return
+				}
+
 				err := userhandler.New(&user)
 				if err != nil {
 					c.AbortWithStatusJSON(checkError(err))
@@ -77,33 +82,6 @@ func UserGroup(r *gin.Engine) {
 					"id":   user.ID,
 					"name": user.Name,
 				})
-			})
-
-		//Endpoint to update the state of a user
-		userRoutes.PUT("/:userid/state",
-			func(c *gin.Context) {
-
-				var user usermodel.User
-
-				if err := c.ShouldBindJSON(&user); err != nil {
-					c.JSON(checkError(err))
-					return
-				}
-
-				user.ID = c.Param("userid")
-
-				//Check if userid is a valid
-				if ok := utils.IsValidUUID(user.ID); !ok {
-					c.AbortWithStatusJSON(checkError(fmt.Errorf("User ID provided is not a valid uuid")))
-					return
-				}
-
-				err := userhandler.SaveState(&user)
-				if err != nil {
-					c.AbortWithStatusJSON(checkError(err))
-					return
-				}
-
 			})
 
 		//Endpoint to get the state of a user
@@ -131,33 +109,35 @@ func UserGroup(r *gin.Engine) {
 				})
 			})
 
-		//Endpoint to update the friends list for a user
-		userRoutes.PUT("/:userid/friends",
+		//Endpoint to update the state of a user
+		userRoutes.PUT("/:userid/state",
 			func(c *gin.Context) {
-
-				//Get the given list. Because I keep it simple, it is jsut a []string converted further into a comma separated list
-				var friends usermodel.FriendsList
-
-				if err := c.ShouldBindJSON(&friends); err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-					return
-				}
 
 				var user usermodel.User
 
+				if err := c.ShouldBindJSON(&user); err != nil {
+					c.JSON(checkError(err))
+					return
+				}
+
+				if user.GamesPlayed == 0 {
+					c.JSON(checkError(fmt.Errorf("User data given should have at least one game played")))
+					return
+				}
+
 				user.ID = c.Param("userid")
 
+				//Check if userid is a valid
 				if ok := utils.IsValidUUID(user.ID); !ok {
 					c.AbortWithStatusJSON(checkError(fmt.Errorf("User ID provided is not a valid uuid")))
 					return
 				}
 
-				err := userhandler.UpdateFriends(friends, &user)
+				err := userhandler.SaveState(&user)
 				if err != nil {
 					c.AbortWithStatusJSON(checkError(err))
 					return
 				}
-
 			})
 
 		//Endpoint to get the friends list for a user
@@ -187,7 +167,39 @@ func UserGroup(r *gin.Engine) {
 				c.JSON(http.StatusOK, gin.H{
 					"friends": friends,
 				})
+			})
 
+		//Endpoint to update the friends list for a user
+		userRoutes.PUT("/:userid/friends",
+			func(c *gin.Context) {
+
+				//Get the given list. Because I keep it simple, it is jsut a []string converted further into a comma separated list
+				var friends usermodel.FriendsList
+
+				if err := c.ShouldBindJSON(&friends); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
+
+				if len(friends.Friends) == 0 {
+					c.JSON(checkError(fmt.Errorf("User data given should have at least one friend")))
+					return
+				}
+
+				var user usermodel.User
+
+				user.ID = c.Param("userid")
+
+				if ok := utils.IsValidUUID(user.ID); !ok {
+					c.AbortWithStatusJSON(checkError(fmt.Errorf("User ID provided is not a valid uuid")))
+					return
+				}
+
+				err := userhandler.UpdateFriends(friends, &user)
+				if err != nil {
+					c.AbortWithStatusJSON(checkError(err))
+					return
+				}
 			})
 	}
 }
@@ -198,7 +210,7 @@ func checkError(err error) (int, gin.H) {
 
 	switch {
 
-	case strings.Contains(err.Error(), "not a valid uuid"), strings.Contains(err.Error(), "No users with"):
+	case strings.Contains(err.Error(), "not a valid uuid"), strings.Contains(err.Error(), "No users with"), strings.Contains(err.Error(), "User data given"):
 		return http.StatusBadRequest, gin.H{"error": err.Error()}
 
 	default:

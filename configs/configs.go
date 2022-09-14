@@ -28,13 +28,11 @@ type config struct {
 
 // Credentials: struct to hold db credentials
 type Credentials struct {
-	Dialect  string `json:"dialect"`
 	User     string `json:"user"`
 	Password string `json:"password"`
 	Host     string `json:"host"`
 	Port     string `json:"port"`
 	Name     string `json:"name"`
-	Cluster  string `json:"cluster"`
 }
 
 // GetConfig: function to fetch configuration

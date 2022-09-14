@@ -26,7 +26,7 @@ func main() {
 	)
 
 	// Run the server
-	err := r.Run(cfg.GetConfig().Port)
+	err := r.Run(":" + cfg.GetConfig().Port)
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
