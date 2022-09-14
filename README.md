@@ -28,3 +28,6 @@ could have used direct call to db and quesries, it could be handy on a small pro
 
 all endpoints return an object { error: error if anything goes wrong.}
 could be extended to check if userid corresponds to a user or no
+
+//first value for each param, improved get all users with filters
+// param work for strings, for other format atm it will throw an error because of the like cluase. If we were to set it to "=" it would also work for other formats but we would loose the flexibility of searching for part of a name

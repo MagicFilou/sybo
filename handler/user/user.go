@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	cfg "sybo/configs"
+	"sybo/models"
 	"sybo/models/user"
 
 	"github.com/google/uuid"
@@ -11,10 +12,10 @@ import (
 
 //GetAll: fetch all the users.
 //TODO add some query params
-func GetAll() ([]user.UserLimited, error) {
+func Get(wds []models.WhereData) ([]user.UserLimited, error) {
 
 	//Get all the users
-	users, err := user.GetAll()
+	users, err := user.Get(wds)
 	if err != nil {
 
 		return nil, err

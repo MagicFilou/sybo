@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	l "sybo/logger"
+	"sybo/models"
 	"sybo/mw"
 	"sybo/utils"
 
@@ -27,7 +28,18 @@ func UserGroup(r *gin.Engine) {
 		userRoutes.GET("",
 			func(c *gin.Context) {
 
-				users, err := userhandler.GetAll()
+				paramMap := c.Request.URL.Query()
+
+				var whereData []models.WhereData
+				for key, value := range paramMap {
+					whereData = append(whereData, models.WhereData{
+						Field: key,
+						//TODO room for improvement but for now just using the first instance of each param
+						Value: value[0],
+					})
+				}
+
+				users, err := userhandler.Get(whereData)
 				if err != nil {
 					c.AbortWithStatusJSON(checkError(err))
 					return

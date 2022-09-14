@@ -6,6 +6,9 @@ import (
 
 	"sybo/clients"
 	cfg "sybo/configs"
+	"sybo/models"
+
+	"gorm.io/gorm"
 )
 
 // User: A user for the game !
@@ -52,17 +55,27 @@ func (u User) ToLimitedStruct() UserLimited {
 	}
 }
 
-// GetAll: get all the users
-func GetAll() ([]User, error) {
+// Get: get all the users with the given params
+func Get(wds []models.WhereData) ([]User, error) {
 
 	db, err := clients.GetCon()
 	if err != nil {
 		return nil, err
 	}
 
+	var result *gorm.DB
 	var users []User
 
-	result := db.Find(&users)
+	//Build the where query to find users according to the where params
+	query, args := models.BuildWHereQuery(wds)
+
+	//This also means that if no parameters are given the get all is still valid
+	if len(query) > 0 {
+		result = db.Where(query, args...).Find(&users)
+	} else {
+		result = db.Find(&users)
+	}
+
 	if result.Error != nil {
 		return users, result.Error
 	}
