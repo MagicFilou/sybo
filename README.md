@@ -5,7 +5,7 @@
 The program is written in Go.
 Before you get the program running there are a few steps to be done:
 
-1. Run the migration to create the necessary table in your postgres db. The SQL is in `migrations/000001_users.up`
+1. Run the migration to create the necessary table in your postgresql db. The SQL is in `migrations/000001_users.up`
 2. Set your environment variables, here are the following ones required:
 
 - ENV should have value _local_ or _prod_ according to the moe you are running
@@ -35,25 +35,25 @@ Before you get the program running there are a few steps to be done:
 
 All endpoints are JSON based.
 
-Only the method specified here will give a result otherwise the Status code associated is _404_
+Only the method specified here will give a result otherwise the status code associated is _404_
 
-If everything runs as expected the response will be a parsable JSON (see the documentation for the formats). Status code associated is _200_
+If everything runs as expected the response will be a parsable JSON (see the documentation for the formats). The status code associated is _200_
 
-If no results are found, there are no response body and the Status code associated is _204_
+If no results are found, there are no response body and the status code associated is _204_
 
 If there is an issue with the data provided e.g. a faulty ID or faulty request body the error will be given with the following body format:
-`{"error": "error as string"}` the Status code associated is 400
+`{"error": "error as string"}` the status code associated is 400
 
 Any other issue with result of a status code 500 and the error (following the same format as above) returned.
 
-The project has 6 enpoints, corresponding to the requirements given by my "friend" aka the assignment :
+The project has 6 endpoints, corresponding to the requirements given by my "friend" (aka: the assignment) :
 
 ### User Endpoints
 
 - GET `/user`
-  This is the only endpoint that handles parameters for now. You can put any param you want but _id_ and _name_ will be the most used ones. For now this is a slight improve from the specification and it uses a "like" clause to fetch and filter the data so it will only work with string params. For now this is case sensitive but it could be improve for future uses.
+  This is the only endpoint that handles parameters for now. You can put any parameter you want but _id_ and _name_ will be the most used ones. For now this is a slight improve from the specification and it uses a "like" clause to fetch and filter the data so it will only work with string parameters. For now this is case sensitive but it could be improve for future uses.
 
-  If you would like to switch to a pure match (using "=") it is easily changable in the code
+  If you would like to switch to a pure match (using "=") it is easily changeable in the code.
 
   Request example:
 
@@ -114,25 +114,25 @@ Reponse example:
 
 ## Comments and Room for improvements
 
-I have made the repo so there is room to be quite extended. Routes, Handlers and Models can easily be extended with either shared items or dedicated data models. The same for clients and utils which are also quite flexible.
+I have made the repositories so there is room to be quite extended. Routes, handlers and models can easily be extended with either shared items or dedicated data models. The same for clients and utils (utilities) which are also quite flexible.
 
 I have also started on a migration pattern but it could be called on the startup of the service to apply migrations or manualy for any changes.
 
-Also i have added a _mw_ folder to put middlewares there. Currently i have not added anything (except for a dummy auth mw). But this would be a good place to check tokens or use other kind of authentication. This could also be the place to make a CORS middleware to handle any issues related to CORS.
+Also I have added a _mw_ folder to put middlewares there. Currently I have not added anything (except for a dummy authentication middelware). But this would be a good place to check tokens or use other kind of authentication. This could also be the place to make a CORS middleware to handle any issues related to CORS.
 
-I used gorm to handle the calls to the database, it is a powerful tool and it requires less maintenance to the queries if the data layer changes. Also several drivers are available for other sql techs. I could also have used direct call to the db and queries, it has its advantages for small projects or significant advance sql requirements.
+I used **gorm** to handle the calls to the database, it is a powerful tool and it requires less maintenance to the queries if the data layer changes. Also several drivers are available for other sql technologies. I could also have used direct call to the database and queries, it has its advantages for small projects or significant advanced sql requirements.
 
-Regarding the _Friends_ list of the user I, decided to go for a comma separated list. It works, however it has advantages and inconvenient. Pros: easy to replace all, quick and simple solution. No need to check for the current list to delete the non existing ones. No need to add another table in the DB.
+Regarding the _Friends_ list of the user, I decided to go for a comma separated list. It works, however it has advantages and inconvenients. Pros: easy to replace all, quick and simple solution. No need to check for the current list to delete the non existing ones. No need to add another table in the DB.
 Cons: does **NOT** scale, cannot check as a foreign key.
 In the long term I would recommend to do the friends as a separated table but it was so much easier to start with a comma separated list
-I think a separate table could be apply to the scores for future uses
+I think a separate table could be applied to the scores for future uses
 
-Still related to the friends, it would be nice if my friend harmonize the json and use _highscore_ or _score_ both places (friends and user state). it would be more consistent.
+Still related to the friends, it would be nice if my friend harmonize the JSON and use _highscore_ or _score_ both places (friends and user state). It would be more consistent.
 
 Maybe an update user endpoint (generic) could be an easier way to use rather than several smaller update endpoints.
 
-I would recommend to use the method PATCH rather than PUT. PUT should be used to replace the entire object and PATCH only to do partial updates.
+I would recommend to use the method `PATCH` rather than `PUT`. `PUT` should be used to replace the entire object and `PATCH` only to do partial updates.
 
-I am probably missing a few const here and there for the errors or specific strings
+I am probably missing a few constants here and there for the errors or specific strings.
 
-In the case of the Get Users, i have started to work on a filtering solution in the query. Right now it will only use the first value for each param but i am sure it could be improved in the future. I could also reflect the value given and use either _=_ or _like_ in the `where` clause depending of it. It would be fun to also be able to filter the users by ranks in the high score or number of games played.
+In the case of the Get Users, I have started to work on a filtering solution in the query. Right now it will only use the first value for each parameter but I am sure it could be improved in the future. I could also reflect the value given and use either _=_ or _like_ in the `where` clause depending of it. It would be fun to also be able to filter the users by ranks in the high score or number of games played.
